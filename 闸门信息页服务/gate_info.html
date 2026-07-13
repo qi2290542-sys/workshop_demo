@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>闸门开闭信息</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      background: transparent;
+      font-family: -apple-system, "Microsoft YaHei", sans-serif;
+    }
+    .panel {
+      height: 100%;
+      padding: 16px;
+      color: #e0f0ff;
+      background: rgba(0, 15, 40, 0.92);
+      border: 1px solid #4cb8ff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 80, 180, 0.5);
+      overflow-y: auto;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #7dd4ff;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #4cb8ff;
+    }
+    .section { margin-bottom: 14px; }
+    .section-title {
+      font-size: 12px;
+      color: #9fd0ff;
+      margin-bottom: 6px;
+    }
+    .levels { border-top: 1px dashed #35618f; padding-top: 10px; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      font-size: 13px;
+    }
+    .row span { color: #cfe6ff; }
+    .row b { color: #7dd4ff; font-weight: bold; }
+    .levels .row b { color: #7dffb0; }
+    .levels .row.discharge b { color: #ffd75d; }
+    .empty { color: #8aa; font-size: 13px; padding: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <div class="title">闸门开闭信息</div>
+    <div class="section">
+      <div class="section-title">各闸门抬升高度</div>
+      <div id="gates"></div>
+    </div>
+    <div class="section levels">
+      <div class="row"><span>上游水位（开闭后）</span><b id="up">-</b></div>
+      <div class="row"><span>下游水位（开闭后）</span><b id="down">-</b></div>
+      <div class="row discharge"><span>实际泄流量</span><b id="q">-</b></div>
+    </div>
+  </div>
+
+  <script>
+    // 数据来自 URL query 参数（由 main.js 拼接）：
+    //   openings=0.75,0.75,0.75  各闸门抬升高度（米，逗号分隔）
+    //   up=76.55  上游水位（米）
+    //   down=88   下游水位（米）
+    //   q=45.31   实际泄流量（m³/s）
+    const p = new URLSearchParams(location.search);
+
+    const openings = (p.get('openings') || '')
+      .split(',')
+      .filter((s) => s !== '')
+      .map(Number);
+
+    const gatesEl = document.getElementById('gates');
+    if (openings.length) {
+      gatesEl.innerHTML = openings
+        .map((o, i) => {
+          const id = String(i + 1).padStart(2, '0');
+          return `<div class="row"><span>${id} 号闸门</span><b>抬升 ${o.toFixed(2)} m</b></div>`;
+        })
+        .join('');
+    } else {
+      gatesEl.innerHTML = '<div class="empty">无开启闸门</div>';
+    }
+
+    const up = p.get('up');
+    const down = p.get('down');
+    const q = p.get('q');
+    document.getElementById('up').textContent = up != null ? `${up} m` : '-';
+    document.getElementById('down').textContent = down != null ? `${down} m` : '-';
+    document.getElementById('q').textContent = q != null ? `${q} m³/s` : '-';
+  </script>
+</body>
+</html>

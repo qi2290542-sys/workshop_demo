@@ -1,0 +1,8 @@
+# 淹没水深计算系统 API 服务端依赖
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+numpy>=1.24.0
+rasterio>=1.3.0
+pyshp>=2.3.0        # shapefile 读取（纯 Python，无需编译 fiona）
+shapely>=1.8.0
+pyproj>=3.4.0

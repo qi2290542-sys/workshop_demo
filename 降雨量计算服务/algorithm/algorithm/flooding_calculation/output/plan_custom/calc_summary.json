@@ -1,0 +1,19 @@
+{
+  "success": true,
+  "mode": "custom",
+  "hours": 48,
+  "step": 10,
+  "dem": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\_internal\\data\\output\\dem_original.tif",
+  "boundary": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\_internal\\data\\input\\boundary\\districts.shp",
+  "grid_count": 18090,
+  "flooded_count": 13796,
+  "max_depth": 0.055,
+  "output_dir": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\output\\plan_custom",
+  "artifacts": {
+    "summary_json": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\output\\plan_custom\\calc_summary.json",
+    "shapefile": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\output\\plan_custom\\flood_depth.shp",
+    "dem_copy": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\output\\plan_custom\\dem_original.tif",
+    "gridid_pattern": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\output\\plan_custom\\GridIDArray*.json",
+    "value_pattern": "D:\\huangqi\\workshop\\algorithm\\algorithm\\flooding_calculation\\output\\plan_custom\\ValueArray*.json"
+  }
+}
