@@ -3,7 +3,7 @@
 淹没水深计算系统 V2.0 - HTTP API 服务端
 ======================================
 固定输入:
-  DEM = data/input/shenzhen_dem.tif（深圳裁剪后地形）
+  DEM = data/input/shenzhen_dem.tif（深圳预裁地形，EPSG:4326，范围约 113.75~114.01°E / 22.45~22.75°N）
 
 可定制参数 (POST /calculate):
   boundary_file     : data/input/ 下的边界文件名（默认深圳2-大.kml）
@@ -36,7 +36,7 @@ import shapefile as pyshp
 # 固定路径配置
 # ─────────────────────────────────────────────────────────────────────────────
 BASE_DIR   = Path(__file__).parent
-DEM_PATH   = str(BASE_DIR / "data" / "input" / "广东西部+广东西部dem.tif")
+DEM_PATH   = str(BASE_DIR / "data" / "input" / "shenzhen_dem.tif")
 INPUT_DIR  = BASE_DIR / "data" / "input"
 OUTPUT_DIR = BASE_DIR / "data" / "output" / "WimDataFilesCheck"
 
@@ -88,7 +88,7 @@ app = FastAPI(
     version="2.0",
     description=(
         "调用淹没水深概化算法（与 V2.0 exe 相同算法）。\n\n"
-        "**固定 DEM**: data/input/shenzhen_dem.tif（深圳裁剪后地形）\n\n"
+        "**固定 DEM**: data/input/shenzhen_dem.tif（深圳预裁地形）\n\n"
         "**可选边界**: data/input/ 下任意 .shp/.kml/.geojson 文件\n\n"
         "**输出**: JSON 时序数据写入 data/output/WimDataFilesCheck/"
     ),

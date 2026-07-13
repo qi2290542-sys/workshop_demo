@@ -1,7 +1,3 @@
-# 超过 GitHub 100MB 单文件上限的大 DEM，请单独传给运维（优盘/网盘）
-# 放置位置：降雨量计算服务/data/input/广东西部+广东西部dem.tif
-降雨量计算服务/data/input/广东西部+广东西部dem.tif
-
 # Python 缓存
 __pycache__/
 *.pyc
