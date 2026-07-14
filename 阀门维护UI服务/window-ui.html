@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阀门维护清单</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: rgba(8, 18, 36, 0.97);
+  color: #c8d8f0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* ── 头部 ───────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 14px;
+  background: rgba(30, 144, 255, 0.1);
+  border-bottom: 1px solid rgba(80, 160, 255, 0.22);
+  flex-shrink: 0;
+}
+.header-icon { font-size: 17px; }
+.header-title { font-size: 14px; font-weight: 600; color: #80beff; flex: 1; }
+.badge {
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+}
+.badge-blue { background: rgba(30,144,255,0.2); color: #55aaff; }
+.badge-red  { background: rgba(255, 50, 50, 0.2); color: #ff7070; margin-left: 4px; }
+.close-btn {
+  width: 22px; height: 22px; border-radius: 4px;
+  background: transparent; border: 1px solid rgba(80,160,255,0.2);
+  color: #557799; font-size: 14px; line-height: 1;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.close-btn:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.5); color: #ff6666; }
+
+/* ── 统计栏 ─────────────────────────────── */
+.stats {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(80, 160, 255, 0.12);
+  flex-shrink: 0;
+}
+.stat {
+  flex: 1; text-align: center;
+  padding: 9px 0;
+  border-right: 1px solid rgba(80, 160, 255, 0.1);
+}
+.stat:last-child { border-right: none; }
+.stat-num { font-size: 20px; font-weight: 700; line-height: 1; }
+.stat-num.blue  { color: #3daeff; }
+.stat-num.red   { color: #ff5555; }
+.stat-num.green { color: #44cc88; }
+.stat-label { font-size: 10px; color: #6688aa; margin-top: 3px; }
+
+/* ── 筛选栏 ─────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  padding: 7px 12px;
+  border-bottom: 1px solid rgba(80, 160, 255, 0.08);
+  flex-shrink: 0;
+}
+.filter-btn {
+  padding: 3px 10px; border-radius: 4px;
+  border: 1px solid rgba(80, 160, 255, 0.25);
+  background: transparent; color: #7799bb;
+  font-size: 11px; cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-btn:hover { border-color: #4da8ff; color: #90c8ff; }
+.filter-btn.active {
+  background: rgba(30, 144, 255, 0.18);
+  border-color: #4da8ff; color: #90c8ff;
+}
+
+/* ── 列表 ───────────────────────────────── */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0 10px;
+}
+.list::-webkit-scrollbar { width: 3px; }
+.list::-webkit-scrollbar-track { background: transparent; }
+.list::-webkit-scrollbar-thumb {
+  background: rgba(80, 160, 255, 0.25);
+  border-radius: 2px;
+}
+
+/* ── 阀门卡片 ───────────────────────────── */
+.valve-card {
+  margin: 3px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(80, 160, 255, 0.18);
+  background: rgba(18, 32, 55, 0.7);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.valve-card:hover { border-color: rgba(80, 160, 255, 0.45); }
+.valve-card.overdue {
+  border-color: rgba(255, 55, 55, 0.38);
+  background: rgba(36, 14, 14, 0.75);
+}
+.valve-card.overdue:hover { border-color: rgba(255, 80, 80, 0.65); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-blue { background: #1E90FF; box-shadow: 0 0 5px #1E90FF80; }
+.dot-red  { background: #FF3333; box-shadow: 0 0 5px #FF333380; }
+
+.valve-name {
+  flex: 1; font-size: 12px; font-weight: 500; color: #aac8e8;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.overdue-tag {
+  padding: 1px 5px; border-radius: 3px; font-size: 10px; flex-shrink: 0;
+  background: rgba(255, 55, 55, 0.18); color: #ff7070;
+  border: 1px solid rgba(255, 55, 55, 0.3);
+}
+.expand-icon {
+  font-size: 9px; color: #445566; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.expand-icon.open { transform: rotate(90deg); }
+
+/* ── 展开详情 ───────────────────────────── */
+.card-body {
+  display: none;
+  padding: 0 11px 11px;
+  border-top: 1px solid rgba(80, 160, 255, 0.1);
+}
+.card-body.open { display: block; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px 14px;
+  margin-top: 10px;
+}
+.info-label { font-size: 10px; color: #557799; margin-bottom: 1px; }
+.info-label { color: #557799; }
+.info-value { font-size: 12px; color: #90b8d8; }
+.due-overdue { color: #ff6666 !important; font-weight: 600; }
+
+.focus-btn {
+  width: 100%; margin-top: 9px;
+  padding: 6px 0;
+  background: rgba(30, 144, 255, 0.12);
+  border: 1px solid rgba(30, 144, 255, 0.35);
+  border-radius: 4px;
+  color: #55aaff; font-size: 11px;
+  cursor: pointer; transition: all 0.15s;
+}
+.focus-btn:hover {
+  background: rgba(30, 144, 255, 0.26);
+  border-color: #55aaff;
+}
+
+/* ── 空状态 / 加载 ──────────────────────── */
+.empty {
+  text-align: center; color: #445566;
+  padding: 40px 20px; font-size: 12px;
+  line-height: 1.8;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">🔧</span>
+  <span class="header-title">阀门维护清单</span>
+  <span class="badge badge-blue" id="badge-total">—</span>
+  <span class="badge badge-red" id="badge-overdue" style="display:none">—</span>
+  <button class="close-btn" title="关闭" onclick="window.parent.postMessage({type:'CLOSE_PANEL'},'*')">✕</button>
+</div>
+
+<div class="stats" id="stats" style="display:none">
+  <div class="stat">
+    <div class="stat-num blue" id="stat-total">0</div>
+    <div class="stat-label">高压阀门</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num red" id="stat-overdue">0</div>
+    <div class="stat-label">待维护</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num green" id="stat-normal">0</div>
+    <div class="stat-label">状态正常</div>
+  </div>
+</div>
+
+<div class="filter-bar" id="filter-bar" style="display:none">
+  <button class="filter-btn active" onclick="setFilter('all', this)">全部</button>
+  <button class="filter-btn" onclick="setFilter('overdue', this)">待维护</button>
+  <button class="filter-btn" onclick="setFilter('normal', this)">正常</button>
+</div>
+
+<div class="list" id="valve-list">
+  <div class="empty">⏳ 等待场景数据加载...</div>
+</div>
+
+<script>
+  let allValves = [];
+  let currentFilter = 'all';
+
+  // 接收来自 main.js 的阀门数据
+  window.addEventListener('message', (e) => {
+    if (!e.data || e.data.type !== 'VALVE_DATA') return;
+    allValves = e.data.valves || [];
+    initUI();
+  });
+
+  function initUI() {
+    const total = allValves.length;
+    const overdue = allValves.filter(v => v.isOverdue).length;
+    const normal = total - overdue;
+
+    document.getElementById('badge-total').textContent = total + ' 个';
+    const ovBadge = document.getElementById('badge-overdue');
+    if (overdue > 0) {
+      ovBadge.textContent = overdue + ' 待维护';
+      ovBadge.style.display = '';
+    }
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-overdue').textContent = overdue;
+    document.getElementById('stat-normal').textContent = normal;
+    document.getElementById('stats').style.display = '';
+    document.getElementById('filter-bar').style.display = '';
+    renderList();
+  }
+
+  function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  }
+
+  function getDueDate(v) {
+    const last = new Date(v.lastMaintDate);
+    const due = new Date(last.getTime() + v.maintCycle * 86400000);
+    return due.toISOString().slice(0, 10);
+  }
+
+  function renderList() {
+    const filtered = allValves.filter(v => {
+      if (currentFilter === 'overdue') return v.isOverdue;
+      if (currentFilter === 'normal') return !v.isOverdue;
+      return true;
+    });
+
+    const container = document.getElementById('valve-list');
+    if (!filtered.length) {
+      container.innerHTML = '<div class="empty">暂无符合条件的阀门</div>';
+      return;
+    }
+
+    container.innerHTML = filtered.map((v, i) => {
+      const dueDate = getDueDate(v);
+      const nodeIdSafe = esc(v.nodeId);
+      return `
+        <div class="valve-card${v.isOverdue ? ' overdue' : ''}">
+          <div class="card-header" onclick="toggle(${i})">
+            <div class="status-dot ${v.isOverdue ? 'dot-red' : 'dot-blue'}"></div>
+            <span class="valve-name" title="${esc(v.name)}">${esc(v.name)}</span>
+            ${v.isOverdue ? '<span class="overdue-tag">待维护</span>' : ''}
+            <span class="expand-icon" id="ei-${i}">▶</span>
+          </div>
+          <div class="card-body" id="cb-${i}">
+            <div class="info-grid">
+              <div>
+                <div class="info-label">额定压力</div>
+                <div class="info-value">${v.ratedPressure} MPa</div>
+              </div>
+              <div>
+                <div class="info-label">当前状态</div>
+                <div class="info-value">${esc(v.status)}</div>
+              </div>
+              <div>
+                <div class="info-label">安装日期</div>
+                <div class="info-value">${v.installDate}</div>
+              </div>
+              <div>
+                <div class="info-label">维护周期</div>
+                <div class="info-value">${v.maintCycle} 天</div>
+              </div>
+              <div>
+                <div class="info-label">上次维护</div>
+                <div class="info-value">${v.lastMaintDate}</div>
+              </div>
+              <div>
+                <div class="info-label">到期日期</div>
+                <div class="info-value${v.isOverdue ? ' due-overdue' : ''}">${dueDate}</div>
+              </div>
+            </div>
+            <button class="focus-btn" onclick="focusValve('${nodeIdSafe}')">
+              📍 聚焦到该阀门
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggle(i) {
+    const body = document.getElementById('cb-' + i);
+    const icon = document.getElementById('ei-' + i);
+    const isOpen = body.classList.toggle('open');
+    icon.classList.toggle('open', isOpen);
+  }
+
+  // 通知 main.js 聚焦到指定阀门节点
+  function focusValve(nodeId) {
+    window.parent.postMessage({ type: 'FOCUS_VALVE', nodeId }, '*');
+  }
+
+  function esc(str) {
+    return String(str).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+    );
+  }
+</script>
+</body>
+</html>
