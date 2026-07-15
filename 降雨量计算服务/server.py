@@ -41,7 +41,7 @@ INPUT_DIR  = BASE_DIR / "data" / "input"
 OUTPUT_DIR = BASE_DIR / "data" / "output" / "WimDataFilesCheck"
 
 DEFAULT_BOUNDARY  = "矢量边界测试3-深圳2-大.kml"
-GRID_STEP         = 10
+GRID_STEP         = 30
 SIM_HOURS_CUSTOM  = 48
 SIM_HOURS_TYPHOON = 96
 

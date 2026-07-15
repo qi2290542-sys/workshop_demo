@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import sys
 import traceback
 from pathlib import Path
 from typing import Optional
@@ -26,7 +27,12 @@ from typing import Optional
 # ─────────────────────────────────────────────────────────────────────────────
 # 固定路径配置
 # ─────────────────────────────────────────────────────────────────────────────
-BASE_DIR       = Path(__file__).parent
+# 兼容 PyInstaller 打包：冻结后 __file__ 指向临时解包目录，需改用 exe 所在目录，
+# 才能正确定位与 exe 同级的 algorithm/algorithm/sluice/sluice.exe。
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys.executable).parent
+else:
+    BASE_DIR = Path(__file__).parent
 SLUICE_EXE     = str(BASE_DIR / "algorithm" / "algorithm" / "sluice" / "sluice.exe")
 SLUICE_EXE_DIR = str(BASE_DIR / "algorithm" / "algorithm" / "sluice")
 
